@@ -1,0 +1,3 @@
+[submodule "rts"]
+	path = rts
+	url = https://github.com/tsamb/rts-tower-defence.git
