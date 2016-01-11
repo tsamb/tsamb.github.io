@@ -1,3 +1,6 @@
 [submodule "rts"]
 	path = rts
 	url = https://github.com/tsamb/rts-tower-defence.git
+[submodule "sim"]
+	path = sim
+	url = https://github.com/tsamb/pharma-sim.git
