@@ -114,28 +114,30 @@ nav li {
   text-align: right;
 }
 
-.project-container {
-  height: 300px;
-}
+@media screen and (min-width:820px) and (max-width:1599px) {
+  .project-container {
+    height: 300px;
+  }
 
-.project-details {
-  padding-right: 20px;
-}
+  .project-details {
+    padding-right: 20px;
+  }
 
-.image-container-right {
-  height: 100%;
-  float: right;
-}
+  .image-container-right {
+    height: 100%;
+    float: right;
+  }
 
-.image-container-left {
-  height: 100%;
-  float: left;
-}
+  .image-container-left {
+    height: 100%;
+    float: left;
+  }
 
-.project-image {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
+  .project-image {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 
 hr {
