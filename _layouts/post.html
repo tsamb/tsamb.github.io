@@ -1,0 +1,9 @@
+---
+layout: default
+---
+<h1 id="page-header">life and times</h1>
+<article>
+  <h2>{{ page.title }}</h2>
+  <h4><time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date: "%A %-d %B %Y" }}</time></h4>
+  {{ content }}
+</article>
