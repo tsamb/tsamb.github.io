@@ -27,13 +27,17 @@
     }
 
     .tabs {
+      width: 100%;
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
       margin-bottom: 20px;
     }
 
     .tab {
       flex: 1;
+      text-align: center;
       background-color: #eee;
       border: none;
       padding: 10px;
@@ -141,7 +145,7 @@
       <p>If a majority of shareholders agreed, the benefit to <span class="categoryNameDynamic">Environment</span> could be <span id="totalExtrapolatedBenefit">$0</span></p>
     </div>
     <button class="submit-btn">Submit</button>
-    <p><i>Note: this is an experimental user interface prototyping and extending ideas from Hart and Zingales' 2022 paper "<a href="https://scholar.harvard.edu/hart/publications/new-corporate-governance">The New Corporate Governance</a>".</i></p>
+    <p><i>Note: this experimental user interface prototypes and extends ideas from Hart and Zingales' 2022 papers "<a href="https://scholar.harvard.edu/hart/publications/new-corporate-governance" target="_blank">The New Corporate Governance</a>" and "<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3680815" target="blank">Exit vs. Voice</a>" (with Broccardo, 2022).</i></p>
   </div>
 
   <script>
