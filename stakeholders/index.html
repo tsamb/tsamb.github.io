@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shareholder Welfare Maximizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      background-color: #fff;
+      margin: 50px auto;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      flex: 1;
+      background-color: #eee;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      cursor: pointer;
+      padding: 10px;
+      margin: 5px;
+      border-radius: 5px;
+      background-color: #f4f4f4;
+    }
+
+    .tab.active {
+      background-color: #e0e0e0;
+      font-style: italic;
+    }
+
+    .tab:hover {
+      background-color: #ddd;
+    }
+
+    .slider-container {
+      margin-bottom: 20px;
+    }
+
+    .slider {
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .submit-btn:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Shareholder Welfare Maximizer</h1>
+    <div>
+      <label>Spot Price ($): </label>
+      <input type="number" id="spotPrice" value="174" onchange="updateUI()">
+    </div>
+
+    <div>
+      <label>Shares Owned: </label>
+      <input type="number" id="sharesOwned" value="1000" onchange="updateUI()">
+    </div>
+
+    <div>
+      <label>Dividend Yield (%): </label>
+      <input type="number" id="dividendYield" value="0.54" onchange="updateUI()">
+    </div>
+
+    <div>
+      <label>Shares outstanding </label>
+      <input type="number" id="sharesOutstanding" value="15630000000" onchange="updateUI()">
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-category="environment" onclick="selectTab('environment')">Environment</div>
+      <div class="tab" data-category="employees" onclick="selectTab('employees')">Employees</div>
+      <div class="tab" data-category="suppliers" onclick="selectTab('suppliers')">Suppliers</div>
+      <div class="tab" data-category="community" onclick="selectTab('community')">Community</div>
+      <div class="tab" data-category="creditors" onclick="selectTab('creditors')">Creditors</div>
+    </div>
+
+    <div class="slider-container">
+      <label>Acceptable share value reduction: <span id="percentageReductionValue">0%</span></label>
+      <input type="range" min="0" max="10" value="0" step="0.1" class="slider" id="percentageReductionSlider"
+        oninput="updateUI()">
+
+      <label>Share value trade-off multiplier for benefit to <span class="categoryNameDynamic">Environment</span>: <span
+          id="multiplierValue">1.0x</span></label>
+      <input type="range" min="1" max="2" value="1" step="0.1" class="slider" id="benefitMultiplierSlider"
+        oninput="updateUI()">
+
+      <label>Acceptable dividend reduction: <span id="dividendReductionValue">0%</span></label>
+      <input type="range" min="0" max="100" value="0" step="0.1" class="slider" id="dividendReductionSlider"
+        oninput="updateUI()">
+
+      <label>Dividend trade-off multiplier for benefit to <span class="categoryNameDynamic">Environment</span>: <span
+          id="dividendMultiplierValue">1.0x</span></label>
+      <input type="range" min="1" max="2" value="1" step="0.1" class="slider" id="dividendBenefitSlider"
+        oninput="updateUI()">
+
+      <p>I would accept a <span id="priceLoss">$0.00</span> drop in share value for a <span id="benefitAmt">$0.00</span> per share benefit to <span class="categoryNameDynamic">Environment</span></p>
+
+      <p>I would give up <span id="totalLoss">$0.00</span> of capital for <span id="totalBenefit">$0.00</span> benefit to <span class="categoryNameDynamic">Environment</span></p>
+
+      <p>I would accept a <span id="dividendLoss">$0.00</span> reduction in dividend for a <span id="dividendBenefitAmt">$0.00</span> benefit to <span class="categoryNameDynamic">Environment</span></p>
+      <p>I would give up <span id="totalDividendLoss">$0.00</span> of dividend payments for <span id="totalDividendBenefit">$0.00</span> benefit to <span class="categoryNameDynamic">Environment</span></p>
+
+      <p>If a majority of shareholders agreed, the benefit to <span class="categoryNameDynamic">Environment</span> could be <span id="totalExtrapolatedBenefit">$0</span></p>
+    </div>
+    <button class="submit-btn">Submit</button>
+    <p><i>Note: this is an experimental user interface prototyping and extending ideas from Hart and Zingales' 2022 paper "<a href="https://scholar.harvard.edu/hart/publications/new-corporate-governance">The New Corporate Governance</a>".</i></p>
+  </div>
+
+  <script>
+    let selectedCategory = "environment";
+
+    let categoryValues = {
+      environment: { percentageReduction: 0, multiplier: 1, dividendReduction: 0, dividendMultiplier: 1 },
+      employees: { percentageReduction: 0, multiplier: 1, dividendReduction: 0, dividendMultiplier: 1 },
+      suppliers: { percentageReduction: 0, multiplier: 1, dividendReduction: 0, dividendMultiplier: 1 },
+      community: { percentageReduction: 0, multiplier: 1, dividendReduction: 0, dividendMultiplier: 1 },
+      creditors: { percentageReduction: 0, multiplier: 1, dividendReduction: 0, dividendMultiplier: 1 }
+    };
+
+    function constrainDividendSliders(targetValue) {
+      let totalDividend = 0;
+      for (let category in categoryValues) {
+        if (category !== selectedCategory) {
+          totalDividend += parseFloat(categoryValues[category].dividendReduction);
+        }
+      }
+
+      let maxDividendReduction = 100 - totalDividend;
+      let constrainedDividendReduction = (targetValue > maxDividendReduction ? maxDividendReduction : targetValue).toFixed(1);
+      categoryValues[selectedCategory].dividendReduction = constrainedDividendReduction;
+      document.getElementById('dividendReductionSlider').value = constrainedDividendReduction;
+      return constrainedDividendReduction;
+    }
+
+    function selectTab(category) {
+      updateCurrentCategoryValues();
+      selectedCategory = category;
+      displayCategoryValues(selectedCategory);
+      updateUI();
+
+      let tabs = document.getElementsByClassName('tab');
+      for (let i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+        if (tabs[i].getAttribute('data-category') === category) {
+          tabs[i].classList.add('active');
+        }
+      }
+    }
+
+    function updateCurrentCategoryValues() {
+      categoryValues[selectedCategory].percentageReduction = document.getElementById('percentageReductionSlider').value;
+      categoryValues[selectedCategory].multiplier = document.getElementById('benefitMultiplierSlider').value;
+      categoryValues[selectedCategory].dividendReduction = document.getElementById('dividendReductionSlider').value;
+      categoryValues[selectedCategory].dividendMultiplier = document.getElementById('dividendBenefitSlider').value;
+    }
+
+    function displayCategoryValues(category) {
+      document.getElementById('percentageReductionSlider').value = categoryValues[category].percentageReduction;
+      document.getElementById('benefitMultiplierSlider').value = categoryValues[category].multiplier;
+      document.getElementById('dividendReductionSlider').value = categoryValues[category].dividendReduction;
+      document.getElementById('dividendBenefitSlider').value = categoryValues[category].dividendMultiplier;
+      Array.from(document.getElementsByClassName('categoryNameDynamic')).forEach(el => el.innerText = category.charAt(0).toUpperCase() + category.slice(1));
+    }
+
+    function updateUI() {
+      let spotPrice = parseFloat(document.getElementById('spotPrice').value);
+      let sharesOwned = parseFloat(document.getElementById('sharesOwned').value);
+      let dividendYield = parseFloat(document.getElementById('dividendYield').value);
+      let sharesOutstanding = parseFloat(document.getElementById('sharesOutstanding').value);
+
+      let percentageReduction = parseFloat(document.getElementById('percentageReductionSlider').value);
+      let multiplier = parseFloat(document.getElementById('benefitMultiplierSlider').value);
+
+      let reducedPrice = spotPrice * (1 - (percentageReduction / 100));
+      let priceLossPerShare = spotPrice - reducedPrice;
+      let benefitPerShare = priceLossPerShare * multiplier;
+
+      let totalLoss = priceLossPerShare * sharesOwned;
+      let totalBenefit = benefitPerShare * sharesOwned;
+
+      document.getElementById('percentageReductionValue').innerText = percentageReduction + '%';
+      document.getElementById('multiplierValue').innerText = multiplier + 'x';
+      document.getElementById('priceLoss').innerText = '$' + priceLossPerShare.toFixed(2);
+      document.getElementById('benefitAmt').innerText = '$' + benefitPerShare.toFixed(2);
+      document.getElementById('totalBenefit').innerText = '$' + totalBenefit.toFixed(2);
+      document.getElementById('totalLoss').innerText = '$' + totalLoss.toFixed(2);
+
+      let dividendReduction = constrainDividendSliders(parseFloat(document.getElementById('dividendReductionSlider').value));
+      let dividendMultiplier = parseFloat(document.getElementById('dividendBenefitSlider').value);
+
+      let actualDividendAmount = (dividendYield / 100) * spotPrice;
+      let reducedDividendAmount = actualDividendAmount * (1 - (dividendReduction / 100));
+      let dividendLossPerShare = actualDividendAmount - reducedDividendAmount;
+      let dividendBenefitPerShare = dividendLossPerShare * dividendMultiplier;
+
+      let totalDividendLoss = dividendLossPerShare * sharesOwned;
+      let totalDividendBenefit = dividendBenefitPerShare * sharesOwned;
+
+      let totalExtrapolatedBenefit = (dividendBenefitPerShare + benefitPerShare) * sharesOutstanding;
+
+      document.getElementById('dividendReductionValue').innerText = dividendReduction + '%';
+      document.getElementById('dividendMultiplierValue').innerText = dividendMultiplier + 'x';
+      document.getElementById('dividendBenefitAmt').innerText = '$' + dividendBenefitPerShare.toFixed(2);
+      document.getElementById('dividendLoss').innerText = '$' + dividendLossPerShare.toFixed(2);
+      document.getElementById('totalDividendBenefit').innerText = '$' + totalDividendBenefit.toFixed(2);
+      document.getElementById('totalDividendLoss').innerText = '$' + totalDividendLoss.toFixed(2);
+      document.getElementById('totalExtrapolatedBenefit').innerText = totalExtrapolatedBenefit.toLocaleString("en", {style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0});
+    }
+    // Initialize the UI for the first time
+    selectTab('environment');
+  </script>
+</body>
+
+</html>
