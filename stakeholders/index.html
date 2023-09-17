@@ -27,6 +27,18 @@
       margin-top: 0;
     }
 
+    .input-variables {
+      display: inline-block;
+      width: 150px;
+      text-align: right;
+      margin-right: 10px;
+      vertical-align: top;
+    }
+
+    input[type="number"] {
+      width: 150px;
+    }
+
     .tabs {
       width: 100%;
       display: flex;
@@ -89,6 +101,7 @@
       display: flex;
       flex-wrap: wrap;
       flex-direction: row;
+      justify-content: space-around;
       align-items: flex-start;
       width: 100%;
       margin-top: 20px;
@@ -97,7 +110,7 @@
 
     @media (min-width: 768px) {
       .chart-container {
-        height: 350px;
+        height: 300px;
       }
     }
   </style>
@@ -107,23 +120,23 @@
   <div class="container">
     <h1>Shareholder Welfare Maximizer</h1>
     <div>
-      <label>Spot Price ($): </label>
+      <label class="input-variables">Spot Price ($): </label>
       <input type="number" id="spotPrice" value="174" onchange="updateUI()">
     </div>
 
     <div>
-      <label>Shares Owned: </label>
-      <input type="number" id="sharesOwned" value="1000" onchange="updateUI()">
-    </div>
-
-    <div>
-      <label>Dividend Yield (%): </label>
+      <label class="input-variables">Dividend Yield (%): </label>
       <input type="number" id="dividendYield" value="0.54" onchange="updateUI()">
     </div>
 
     <div>
-      <label>Shares outstanding </label>
+      <label class="input-variables">Shares outstanding </label>
       <input type="number" id="sharesOutstanding" value="15630000000" onchange="updateUI()">
+    </div>
+
+    <div>
+      <label class="input-variables">Shares Owned: </label>
+      <input type="number" id="sharesOwned" value="1000" onchange="updateUI()">
     </div>
 
     <div class="tabs">
@@ -168,8 +181,12 @@
         be <span id="totalExtrapolatedBenefit">$0</span></p>
     </div>
     <div class="chart-container">
-      <canvas class="chart" id="dividendChart"></canvas>
-      <canvas class="chart" id="capitalChart"></canvas>
+      <div class="single-chart-container">
+        <canvas class="chart" id="dividendChart"></canvas>
+      </div>
+      <div class="single-chart-container">
+        <canvas class="chart" id="capitalChart"></canvas>
+      </div>
     </div>
     <div>
       <p id="analogy"></p>
@@ -242,6 +259,8 @@
           }]
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: true,
           animation: {
             duration: 0,
           },
