@@ -96,10 +96,10 @@
     }
 
     @media (min-width: 768px) {
-   .chart-container {
-      height: 350px;
-   }
-}
+      .chart-container {
+        height: 350px;
+      }
+    }
   </style>
 </head>
 
@@ -171,6 +171,9 @@
       <canvas class="chart" id="dividendChart"></canvas>
       <canvas class="chart" id="capitalChart"></canvas>
     </div>
+    <div>
+      <p id="analogy"></p>
+    </div>
     <button class="submit-btn">Submit</button>
     <p><i>Note: this experimental user interface prototypes and extends ideas from Hart and Zingales' 2022 papers "<a
           href="https://scholar.harvard.edu/hart/publications/new-corporate-governance" target="_blank">The New
@@ -189,9 +192,44 @@
       creditors: { percentageReduction: 0, multiplier: 1, dividendReduction: 0, dividendMultiplier: 1 }
     };
 
-    let chartColors = ['#99E699', '#C266FF', '#FF9999', '#66B2FF', '#33CCCC', '#FFCC66']
+    function determineWaterUnits(investmentDollars, benefitDollars) {
+      // Define units and their corresponding dollar values
+      const units = [
+        { unit: "glass(es)", value: 250 },
+        { unit: "bottle(s)", value: 500 },
+        { unit: "bucket(s)", value: 10000 },
+        { unit: "bathtub(s)", value: 150000 },
+        { unit: "hot tub(s)", value: 1500000 },
+        { unit: "residential swimming pool(s)", value: 200000000 },
+        { unit: "olympic swimming pool(s)", value: 2500000000 }
+      ];
+
+      // Helper function to find the most appropriate unit for a given amount
+      function findUnit(dollars) {
+        let chosenUnit = units[0];
+
+        for (let i = 1; i < units.length; i++) {
+          if (dollars >= units[i].value) {
+            chosenUnit = units[i];
+          } else {
+            break;
+          }
+        }
+
+        return {
+          unit: chosenUnit.unit,
+          amount: (dollars / chosenUnit.value).toLocaleString("en", { maximumFractionDigits: 1 })
+        };
+      }
+
+      return {
+        investment: findUnit(investmentDollars),
+        benefit: findUnit(benefitDollars)
+      };
+    }
 
     function buildChart(title, chartID, dataset, attribute, defaultLabel) {
+      let chartColors = ['#99E699', '#C266FF', '#FF9999', '#66B2FF', '#33CCCC', '#FFCC66'];
       let obj = new Chart(document.getElementById(chartID), {
         type: 'doughnut',
         data: {
@@ -249,6 +287,7 @@
     }
 
     function updateCharts(chart, data, labels) {
+      let chartColors = ['#99E699', '#C266FF', '#FF9999', '#66B2FF', '#33CCCC', '#FFCC66'];
       chart.data = {
         labels: labels,
         datasets: [{
@@ -257,6 +296,23 @@
         }]
       };
       chart.update();
+    }
+
+    function extrapolatedCostBenefit(spotPrice, actualDividendAmount, sharesOutstanding, sharesOwned) {
+      return Object.keys(categoryValues).map(key => categoryValues[key]).reduce((costBenefit, stakeholder) => {
+        let capitalCostPerShare = spotPrice * stakeholder.percentageReduction / 100;
+        let dividendCostPerShare = actualDividendAmount * stakeholder.dividendReduction / 100;
+
+        let capitalCost = capitalCostPerShare * sharesOwned;
+        let dividendCost = dividendCostPerShare * sharesOwned;
+
+        let extrapolatedCapitalBenefit = capitalCostPerShare * stakeholder.multiplier * sharesOutstanding;
+        let extrapolatedDividendBenefit = dividendCostPerShare * stakeholder.dividendMultiplier * sharesOutstanding;
+
+        costBenefit.cost += (capitalCost + dividendCost);
+        costBenefit.benefit += (extrapolatedCapitalBenefit + extrapolatedDividendBenefit);
+        return costBenefit
+      }, { cost: 0, benefit: 0 })
     }
 
     function constrainDividendSliders(targetValue) {
@@ -349,6 +405,12 @@
       document.getElementById('totalDividendBenefit').innerText = '$' + totalDividendBenefit.toFixed(2);
       document.getElementById('totalDividendLoss').innerText = '$' + totalDividendLoss.toFixed(2);
       document.getElementById('totalExtrapolatedBenefit').innerText = totalExtrapolatedBenefit.toLocaleString("en", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+      let costBenefit = extrapolatedCostBenefit(spotPrice, actualDividendAmount, sharesOutstanding, sharesOwned);
+      if (costBenefit.benefit > 0) {
+        let waterUnits = determineWaterUnits(costBenefit.cost, costBenefit.benefit);
+        document.getElementById('analogy').innerText = `If the total financial gain you're willing to give up was equivalent to ${waterUnits.investment.amount} ${waterUnits.investment.unit} of water and if a majority of shareholders desired the same, relative to their shareholding, then the total benefit across all stakeholders would be equivalent to ${waterUnits.benefit.amount} ${waterUnits.benefit.unit} of water.`;
+      }
 
       [dividendChart, capitalChart].forEach(chart => {
         updateCharts(
