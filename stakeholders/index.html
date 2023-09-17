@@ -195,6 +195,8 @@
     function determineWaterUnits(investmentDollars, benefitDollars) {
       // Define units and their corresponding dollar values
       const units = [
+        { unit: "teapoon(s)", value: 5 },
+        { unit: "tablespoon(s)", value: 15 },
         { unit: "glass(es)", value: 250 },
         { unit: "bottle(s)", value: 500 },
         { unit: "bucket(s)", value: 10000 },
@@ -407,9 +409,12 @@
       document.getElementById('totalExtrapolatedBenefit').innerText = totalExtrapolatedBenefit.toLocaleString("en", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
       let costBenefit = extrapolatedCostBenefit(spotPrice, actualDividendAmount, sharesOutstanding, sharesOwned);
+
       if (costBenefit.benefit > 0) {
         let waterUnits = determineWaterUnits(costBenefit.cost, costBenefit.benefit);
         document.getElementById('analogy').innerText = `If the total financial gain you're willing to give up was equivalent to ${waterUnits.investment.amount} ${waterUnits.investment.unit} of water and if a majority of shareholders desired the same, relative to their shareholding, then the total benefit across all stakeholders would be equivalent to ${waterUnits.benefit.amount} ${waterUnits.benefit.unit} of water.`;
+      } else {
+        document.getElementById('analogy').innerText = "";
       }
 
       [dividendChart, capitalChart].forEach(chart => {
