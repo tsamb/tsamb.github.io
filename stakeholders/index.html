@@ -431,7 +431,7 @@
 
       if (costBenefit.benefit > 0) {
         let waterUnits = determineWaterUnits(costBenefit.cost, costBenefit.benefit);
-        document.getElementById('analogy').innerText = `If the total financial gain you're willing to give up was equivalent to ${waterUnits.investment.amount} ${waterUnits.investment.unit} of water and if a majority of shareholders desired the same, relative to their shareholding, then the total benefit across all stakeholders would be equivalent to ${waterUnits.benefit.amount} ${waterUnits.benefit.unit} of water.`;
+        document.getElementById('analogy').innerText = `If the total financial gain you're willing to give up was equivalent to ${waterUnits.investment.amount} ${waterUnits.investment.unit} of water and if a majority of shareholders desired the same relative to their shareholding, then the total benefit across all stakeholders would be equivalent to ${waterUnits.benefit.amount} ${waterUnits.benefit.unit} of water.`;
       } else {
         document.getElementById('analogy').innerText = "";
       }
