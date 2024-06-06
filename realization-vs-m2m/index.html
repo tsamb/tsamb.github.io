@@ -42,7 +42,7 @@
     <h1>Interactive Tax Impact Graph</h1>
     <div class="controls">
       <div>
-        <label for="x-input">Risky return (x):</label>
+        <label for="x-input">Return on investment (x):</label>
         <input id="x-input" type="range" value="0.10" step="0.001" min="-1" max="5" oninput="updateGraph()">
         <span id="x-value">10.0%</span>
       </div>
@@ -146,7 +146,7 @@
             ];
 
             const layout = {
-                title: 'Results of Formulas with Variable Tax Rates over n Periods',
+                title: 'Comparison of taxation systems over time',
                 xaxis: { title: 'Number of Periods (n)' },
                 yaxis: { title: 'Value' },
                 showlegend: true
