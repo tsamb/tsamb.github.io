@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Tax Impact Graph</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .controls div {
+            flex: 1;
+            min-width: 200px;
+        }
+        .controls label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .controls input[type=range] {
+            width: 100%;
+        }
+        .controls span {
+            display: block;
+            text-align: center;
+            margin-top: 5px;
+        }
+        .slider-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Tax Impact Graph</h1>
+    <div class="controls">
+      <div>
+        <label for="x-input">Risky return (x):</label>
+        <input id="x-input" type="range" value="0.10" step="0.001" min="-1" max="5" oninput="updateGraph()">
+        <span id="x-value">10.0%</span>
+      </div>
+      <div>
+        <label for="r-input">Risk-free rate (r):</label>
+        <input id="r-input" type="range" value="0.05" step="0.0001" min="0" max="0.5" oninput="updateGraph()">
+        <span id="r-value">5.00%</span>
+      </div>
+      <div>
+        <label for="t1-input">Tax Rate (t1):</label>
+        <input id="t1-input" type="range" value="0.20" step="0.0001" min="0" max="1" oninput="updateGraph()">
+        <span id="t1-value">20.0%</span>
+      </div>
+      <div>
+        <label for="t2-input">Tax Rate (t2):</label>
+        <input id="t2-input" type="range" value="0.40" step="0.0001" min="0" max="1" oninput="updateGraph()">
+        <span id="t2-value">40.0%</span>
+      </div>
+    </div>
+    <div id="graph"></div>
+    <div class="slider-container">
+        <label for="n-range">Number of Periods (n):</label>
+        <input id="n-range" type="range" min="1" max="100" value="15" oninput="updateGraph()">
+        <span id="n-value">15</span>
+    </div>
+
+    <script>
+        function formula1(x, n) {
+            return Math.pow(1 + x, n);
+        }
+
+        function formula2(x, n, t) {
+            return Math.pow(1 + x, n) * (1 - t);
+        }
+
+        function formula3(x, n, t, r) {
+            return Math.pow(1 + x, n) * Math.pow(1 - (((Math.pow(1 + r, n) - 1) * t) / (1 + (Math.pow(1 + r, n) - 1))), n);
+        }
+
+        function getColor(t) {
+            const hue = (1 - t) * 60; // Yellow to red
+            return `hsl(${hue}, 100%, 50%)`;
+        }
+
+        function updateGraph() {
+            const x = parseFloat(document.getElementById('x-input').value);
+            const r = parseFloat(document.getElementById('r-input').value);
+            const t1 = parseFloat(document.getElementById('t1-input').value);
+            const t2 = parseFloat(document.getElementById('t2-input').value);
+            const nMax = parseInt(document.getElementById('n-range').value);
+
+            document.getElementById('x-value').textContent = (x * 100).toFixed(1) + '%';
+            document.getElementById('r-value').textContent = (r * 100).toFixed(2) + '%';
+            document.getElementById('t1-value').textContent = (t1 * 100).toFixed(1) + '%';
+            document.getElementById('t2-value').textContent = (t2 * 100).toFixed(1) + '%';
+            document.getElementById('n-value').textContent = nMax;
+
+            const nValues = Array.from({length: nMax}, (v, k) => k + 1);
+            const resultsFormula1 = nValues.map(n => formula1(x, n));
+            const resultsFormula2T1 = nValues.map(n => formula2(x, n, t1));
+            const resultsFormula3T1 = nValues.map(n => formula3(x, n, t1, r));
+            const resultsFormula2T2 = nValues.map(n => formula2(x, n, t2));
+            const resultsFormula3T2 = nValues.map(n => formula3(x, n, t2, r));
+
+            const data = [
+                {
+                    x: nValues,
+                    y: resultsFormula1,
+                    mode: 'lines',
+                    name: 'No tax',
+                    line: { color: 'black', dash: 'dot' }
+                },
+                {
+                    x: nValues,
+                    y: resultsFormula2T1,
+                    mode: 'lines',
+                    name: `Tax on realization (t=${(t1 * 100).toFixed(2)}%)`,
+                    line: { color: "#2e5cd1", dash: 'solid' }
+                },
+                {
+                    x: nValues,
+                    y: resultsFormula3T1,
+                    mode: 'lines',
+                    name: `Accrual tax (t=${(t1 * 100).toFixed(2)}%)`,
+                    line: { color: "#2e5cd1", dash: 'dash' }
+                },
+                {
+                    x: nValues,
+                    y: resultsFormula2T2,
+                    mode: 'lines',
+                    name: `Tax on realization (t=${(t2 * 100).toFixed(2)}%)`,
+                    line: { color: "#d63a4c", dash: 'solid' }
+                },
+                {
+                    x: nValues,
+                    y: resultsFormula3T2,
+                    mode: 'lines',
+                    name: `Accrual tax (t=${(t2 * 100).toFixed(2)}%)`,
+                    line: { color: "#d63a4c", dash: 'dash' }
+                }
+            ];
+
+            const layout = {
+                title: 'Results of Formulas with Variable Tax Rates over n Periods',
+                xaxis: { title: 'Number of Periods (n)' },
+                yaxis: { title: 'Value' },
+                showlegend: true
+            };
+
+            Plotly.newPlot('graph', data, layout);
+        }
+
+        // Initial plot
+        updateGraph();
+    </script>
+</body>
+</html>
