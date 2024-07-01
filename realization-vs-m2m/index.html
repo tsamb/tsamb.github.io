@@ -75,11 +75,15 @@
         }
 
         function formula2(x, n, t) {
-            return Math.pow(1 + x, n) * (1 - t);
+            return Math.pow(1 + x, n) * (1 - t) + t;
         }
 
         function formula3(x, n, t, r) {
-            return Math.pow(1 + x, n) * Math.pow(1 - (((Math.pow(1 + r, n) - 1) * t) / (1 + (Math.pow(1 + r, n) - 1))), n);
+            return Math.pow(1 + x, n) * Math.pow(1 - (r * t / (1 + r) ), n);
+        }
+
+        function formula4(x, n, t) {
+            return Math.pow(1 + x * (1 - t), n);
         }
 
         function getColor(t) {
@@ -104,8 +108,10 @@
             const resultsFormula1 = nValues.map(n => formula1(x, n));
             const resultsFormula2T1 = nValues.map(n => formula2(x, n, t1));
             const resultsFormula3T1 = nValues.map(n => formula3(x, n, t1, r));
+            const resultsFormula4T1 = nValues.map(n => formula2(x, n, t1));
             const resultsFormula2T2 = nValues.map(n => formula2(x, n, t2));
             const resultsFormula3T2 = nValues.map(n => formula3(x, n, t2, r));
+            const resultsFormula4T2 = nValues.map(n => formula2(x, n, t2));
 
             const data = [
                 {
@@ -126,8 +132,15 @@
                     x: nValues,
                     y: resultsFormula3T1,
                     mode: 'lines',
-                    name: `Accrual tax (t=${(t1 * 100).toFixed(2)}%)`,
+                    name: `Retrospective tax (t=${(t1 * 100).toFixed(2)}%)`,
                     line: { color: "#2e5cd1", dash: 'dash' }
+                },
+                {
+                    x: nValues,
+                    y: resultsFormula4T1,
+                    mode: 'lines',
+                    name: `Accrual tax (t=${(t1 * 100).toFixed(2)}%)`,
+                    line: { color: "#2e5cd1", dash: 'dotdash' }
                 },
                 {
                     x: nValues,
@@ -140,9 +153,16 @@
                     x: nValues,
                     y: resultsFormula3T2,
                     mode: 'lines',
-                    name: `Accrual tax (t=${(t2 * 100).toFixed(2)}%)`,
+                    name: `Retrospective tax (t=${(t2 * 100).toFixed(2)}%)`,
                     line: { color: "#d63a4c", dash: 'dash' }
-                }
+                },
+                {
+                    x: nValues,
+                    y: resultsFormula4T2,
+                    mode: 'lines',
+                    name: `Accrual tax (t=${(t1 * 100).toFixed(2)}%)`,
+                    line: { color: "#d63a4c", dash: 'dotdash' }
+                },
             ];
 
             const layout = {
