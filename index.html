@@ -76,13 +76,38 @@
     text-wrap: pretty;
   }
 
-  /* One sentence per line. Each is its own block, so the break points are the
-     sentence boundaries rather than wherever the text happens to run out of
-     room; below ~44rem a sentence wraps within itself instead of colliding
-     with its neighbours. */
+  /* One line per statement. Each is its own block, so breaks fall on sentence
+     boundaries rather than wherever the text happens to run out of room. */
   p span {
     display: block;
     text-wrap: balance;
+  }
+
+  /* Below 44rem the long sentences no longer fit on one line each — the exact
+     threshold depends on which serif the OS resolves, so the switch is set
+     wide enough to clear the widest of them. Shrinking the type to fit instead
+     would need ~10px on a phone, so the short form carries the copy there. */
+  p .narrow {
+    display: none;
+  }
+
+  @media (max-width: 44rem) {
+    p .wide {
+      display: none;
+    }
+
+    p .narrow {
+      display: block;
+    }
+  }
+
+  /* On the smallest handsets, trim the side margins and the type a little so
+     even the widest serif keeps each short line whole. */
+  @media (max-width: 23rem) {
+    body {
+      padding-inline: 1rem;
+      font-size: 0.9375rem;
+    }
   }
 
   p:last-child {
@@ -111,9 +136,13 @@
   <main>
     <h1>Samuel R Blackman</h1>
     <p>
-      <span>Entrepreneur and public policy researcher in Auckland, New&nbsp;Zealand.</span>
-      <span>Academic interest in the theory of taxation and risk-taking.</span>
-      <span>Long-time software developer; occasional founder.</span>
+      <span class="wide">Entrepreneur and public policy researcher in Auckland, New&nbsp;Zealand.</span>
+      <span class="wide">Academic interest in the theory of taxation and risk-taking.</span>
+      <span class="wide">Long-time software developer; occasional founder.</span>
+      <span class="narrow">Entrepreneur and policy researcher.</span>
+      <span class="narrow">Academic taxation theorist.</span>
+      <span class="narrow">Software developer.</span>
+      <span class="narrow">Occasional founder.</span>
     </p>
     <p>More on <a href="https://www.linkedin.com/in/samuelblackman/" rel="me">LinkedIn</a>.</p>
   </main>
