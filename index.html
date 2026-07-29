@@ -44,7 +44,9 @@
 
   main {
     width: 100%;
-    max-width: 32rem;
+    /* Wide enough to hold the longest sentence on one line in any of the
+       serifs above — the widest needs ~40rem at this size. */
+    max-width: 44rem;
     text-align: center;
   }
 
@@ -74,6 +76,15 @@
     text-wrap: pretty;
   }
 
+  /* One sentence per line. Each is its own block, so the break points are the
+     sentence boundaries rather than wherever the text happens to run out of
+     room; below ~44rem a sentence wraps within itself instead of colliding
+     with its neighbours. */
+  p span {
+    display: block;
+    text-wrap: balance;
+  }
+
   p:last-child {
     margin-bottom: 0;
   }
@@ -99,7 +110,11 @@
 <body>
   <main>
     <h1>Samuel R Blackman</h1>
-    <p>Entrepreneur and public policy researcher in Auckland, New Zealand. Academic interest in technical tax theory. Long-time software developer; occasional founder.</p>
+    <p>
+      <span>Entrepreneur and public policy researcher in Auckland, New&nbsp;Zealand.</span>
+      <span>Academic interest in technical tax theory.</span>
+      <span>Long-time software developer; occasional founder.</span>
+    </p>
     <p>More on <a href="https://www.linkedin.com/in/samuelblackman/" rel="me">LinkedIn</a>.</p>
   </main>
 </body>
