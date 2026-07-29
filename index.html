@@ -1,27 +1,106 @@
----
-layout: default
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Samuel R Blackman</title>
+<meta name="description" content="Entrepreneur and public policy researcher in Auckland, New Zealand.">
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    color-scheme: light dark;
+    --stock: #efece2;
+    --ink: #1b1a17;
+    --rule: #b3ad9d;
+    --track: 0.22em;
+  }
 
-<h1 id="page-header">I am Sam</h1>
-<section id="five-ws">
-  <div>
-    <h2>Who</h2>
-    <p>I'm a New Zealand-American immigrant with Danish, Scottish, English and Tongan heritage.</p>
-  </div>
-  <div>
-    <h2>What</h2>
-    <p>I contemplate ways to improve societies through education, entrepreneurship and technology.</p>
-  </div>
-  <div>
-    <h2>When</h2>
-    <p>I moved to the United States in 2014 to help launch Dev Bootcamp in New York City.</p>
-  </div>
-  <div>
-    <h2>Where</h2>
-    <p>I live in Cambridge, Massachusetts, not to be confused with <a href="https://en.wikipedia.org/wiki/Cambridge,_New_Zealand">Cambridge, Waikato</a>.</p>
-  </div>
-  <div>
-    <h2>Why</h2>
-    <p>The rising tide has deepened divides. I want it to lift all boats.</p>
-  </div>
-</section>  
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --stock: #14130f;
+      --ink: #e6e2d6;
+      --rule: #4b473d;
+    }
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    box-sizing: border-box;
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    padding: 2rem 1.25rem;
+    background: var(--stock);
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", Times, serif;
+    font-size: clamp(1rem, 2.6vw, 1.125rem);
+    line-height: 1.65;
+  }
+
+  main {
+    width: 100%;
+    max-width: 32rem;
+    text-align: center;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.1rem, 4.5vw, 1.9rem);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: var(--track);
+    /* Offsets the trailing letter-space so tracked capitals stay optically centred. */
+    padding-left: var(--track);
+    text-wrap: balance;
+  }
+
+  /* Engraved hairline, decorative only — no separator announced to screen readers. */
+  h1::after {
+    content: "";
+    display: block;
+    width: 3.5rem;
+    height: 1px;
+    margin: 1.4rem auto 1.6rem;
+    background: var(--rule);
+  }
+
+  p {
+    margin: 0 0 1.1rem;
+    text-wrap: pretty;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+  <main>
+    <h1>Samuel R Blackman</h1>
+    <p>Entrepreneur and public policy researcher in Auckland, New Zealand. Academic interest in technical tax theory. Long-time software developer; occasional founder.</p>
+    <p>More on <a href="https://www.linkedin.com/in/samuelblackman/" rel="me">LinkedIn</a>.</p>
+  </main>
+</body>
+</html>
